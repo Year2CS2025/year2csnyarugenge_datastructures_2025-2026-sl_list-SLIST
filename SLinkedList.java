@@ -1,6 +1,7 @@
 import java.util.NoSuchElementException;
 
 public class SLinkedList<T> implements Iterable<T> {
+
     class Node<T>{
         T data;
         Node<T> next;
