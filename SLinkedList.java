@@ -1,9 +1,7 @@
-package SLIST;
-
-
 import java.util.NoSuchElementException;
 
-public class SLinkedList<T> {
+public class SLinkedList<T> implements Iterable<T> {
+
     class Node<T>{
         T data;
         Node<T> next;
@@ -21,7 +19,7 @@ public class SLinkedList<T> {
         head=null;
         size=0;
 
-}
+    }
     
    
                
@@ -29,7 +27,11 @@ public class SLinkedList<T> {
         Node<T> newNode = new Node<>(data);
         newNode.next = head;
         head = newNode;
-        tail=newNode;
+        
+        if(tail==null){
+            tail = newNode;
+        }
+        
         size++;
     }
     public void addLast(T data){
@@ -118,19 +120,104 @@ public class SLinkedList<T> {
     }
     public void remove (T e) {
         //removes first occurrence of e
+        if (head == null) return;
+
+        // If element is at head
+        if (head.data.equals(e)) {
+            deleteFirst();
+            return;
+        }
+
+        Node<T> prev = head;
+        Node<T> current = head.next;
+
+        while (current != null) {
+            if (current.data.equals(e)) {
+                prev.next = current.next;
+                if (current == tail) {
+                    tail = prev;
+                }
+                size--;
+                return;
+            }
+            prev = current;
+            current = current.next;
+        }
     }
     public void reverse(){
-        
-    //TODO
+
+        Node<T> prev = null;
+        Node<T> current = head;
+        Node<T> next = null;
+        tail = head; // old head becomes new tail
+
+        while (current != null) {
+            next = current.next;
+            current.next = prev;
+            prev = current;
+            current = next;
+        }
+        head = prev;
     }
     public void deleteConsecutiveDuplicates(){
-       //TODO
+        if (head == null) return;
+
+        Node<T> current = head;
+        while (current != null && current.next != null) {
+            if (current.data.equals(current.next.data)) {
+                current.next = current.next.next;
+                size--;
+                if (current.next == null) {
+                    tail = current;
+                }
+            } else {
+                current = current.next;
+            }
+        }
     }
     //two lists are equal if they have the same 
     // size and the same elements in the same order
     @Override
     public boolean equals(Object obj){
-        //TODO
+        if (this == obj) return true;
+        if (!(obj instanceof SLinkedList)) return false;
+
+        SLinkedList<?> other = (SLinkedList<?>) obj;
+        if (this.size != other.size) return false;
+
+        Node<T> curr1 = this.head;
+        Node curr2 = other.head;
+
+        while (curr1 != null && curr2 != null) {
+            if (!curr1.data.equals(curr2.data)) {
+                return false;
+            }
+            curr1 = curr1.next;
+            curr2 = curr2.next;
+        }
+        return true;
     }
+
+    @Override
+    public java.util.Iterator<T> iterator() {
+        return new java.util.Iterator<T>() {
+        private Node<T> current = head;
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            T data = current.data;
+            current = current.next;
+            return data;
+        }
+    };
+}
 
 }
